@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity(){
             if (menuItems.isNotEmpty()) {
                 menuDao.clearMenu() // ✅ Clear old data
                 menuDao.insertMenuItems(menuItems.map {
-                    MenuItemEntity(it.id, it.title, it.description, it.price, it.image)
+                    MenuItemEntity(it.id, it.title, it.description, it.price, it.image, it.category)
                 })
 
                 val storedItems = menuDao.getAllMenuItems() // ✅ Fetch from Room

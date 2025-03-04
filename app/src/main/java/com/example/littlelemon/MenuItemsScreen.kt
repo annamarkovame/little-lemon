@@ -11,24 +11,30 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.example.littlelemon.AppDatabase
-import kotlinx.coroutines.flow.Flow
 
 @Composable
-fun MenuItemsScreen(navController: NavController) {
+fun MenuItemsScreen(navController: NavController, searchQuery: String, selectedCategory: String?) {
     val context = LocalContext.current
-    val database = remember { AppDatabase.getDatabase(context) } // Prevents unnecessary recompositions
-    val menuDao = remember { database.menuDao() } // Ensures stable reference
+    val database = remember { AppDatabase.getDatabase(context) }
+    val menuDao = remember { database.menuDao() }
     val menuItems by menuDao.getAllMenuItems().collectAsStateWithLifecycle(initialValue = emptyList())
+
+    // **Filter Menu Items Based on Search Query and Category**
+    val filteredMenuItems = menuItems.filter { item ->
+        (searchQuery.isBlank() ||
+                item.title.contains(searchQuery, ignoreCase = true) ||
+                item.description.contains(searchQuery, ignoreCase = true)) &&
+                (selectedCategory == null || item.category.equals(selectedCategory, ignoreCase = true))
+    }
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(16.dp)
     ) {
         Text(
@@ -39,15 +45,16 @@ fun MenuItemsScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        if (menuItems.isEmpty()) {
-            Text(text = "No menu items found.")
+        if (filteredMenuItems.isEmpty()) {
+            Text(text = "No menu items found.", fontSize = 16.sp, fontWeight = FontWeight.Medium)
         } else {
-            menuItems.forEach { item ->
+            filteredMenuItems.forEach { item ->
                 MenuItemComposable(item)
             }
         }
     }
 }
+
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -56,35 +63,39 @@ fun MenuItemComposable(item: MenuItemEntity) {
         Log.d("GlideDebug", "Image URL: ${item.image}")
     }
 
-    Column(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(8.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        Text(
-            text = item.title,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Text(text = item.description, fontSize = 14.sp)
-        Text(text = "Price: $${item.price}", fontSize = 14.sp, fontWeight = FontWeight.Bold)
+        Column(
+            modifier = Modifier.padding(12.dp)
+        ) {
+            Text(
+                text = item.title,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Text(text = item.description, fontSize = 14.sp)
+            Text(text = "Price: $${item.price}", fontSize = 14.sp, fontWeight = FontWeight.Bold)
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-        GlideImage(
-            model = item.image?.takeIf { it.isNotBlank() } ?: "https://via.placeholder.com/150",
-            contentDescription = item.title,
-            modifier = Modifier
-                .size(150.dp) // Ensure proper size
-                .fillMaxWidth(),
-            requestBuilderTransform = { requestBuilder ->
-                requestBuilder.apply(
-                    RequestOptions()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                )
-            }
-        )
+            GlideImage(
+                model = item.image?.takeIf { it.isNotBlank() } ?: "https://via.placeholder.com/150",
+                contentDescription = item.title,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(16f / 9f), // ✅ Ensures uniform image size
+                requestBuilderTransform = { requestBuilder ->
+                    requestBuilder.apply(
+                        RequestOptions()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .centerCrop() // ✅ Crops the image to maintain proper aspect ratio
+                    )
+                }
+            )
+        }
     }
 }
-
-
