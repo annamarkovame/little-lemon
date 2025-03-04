@@ -14,9 +14,10 @@ fun navGraph(navController: NavController, isLoggedIn: Boolean = false): NavGrap
         "onboarding"
     }
     ){
-        composable("onboarding") { OnboardingScreen(navController)}
-            composable("home") { HomeScreen(navController)  }
-            composable("profile") { ProfileScreen(navController)  }
+        composable("onboarding") { OnboardingScreen(navController) }
+        composable("home") { HomeScreen(navController) }
+        composable("profile") { ProfileScreen(navController) }
+
 
 
     }

@@ -1,7 +1,10 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("com.google.devtools.ksp") version "1.9.0-1.0.13" // ✅ Add KSP plugin
+    kotlin("plugin.serialization") version "1.9.0"
 }
+
 
 android {
     namespace = "com.example.littlelemon"
@@ -69,4 +72,20 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.ktor.client.android)
+    implementation(libs.kotlinx.serialization.json.v151)
+    implementation(libs.ktor.client.content.negotiation.v213)
+    implementation(libs.ktor.serialization.kotlinx.json.v213)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.ktor.client.content.negotiation)
+    implementation(libs.ktor.ktor.serialization.kotlinx.json)
+    implementation(libs.androidx.room.runtime)
+    ksp("androidx.room:room-compiler:2.6.1")
+
+    implementation(libs.compose.v100beta01)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.compose)
+
 }

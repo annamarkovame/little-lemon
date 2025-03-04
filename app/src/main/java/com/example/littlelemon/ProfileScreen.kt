@@ -18,83 +18,68 @@ import androidx.compose.ui.graphics.Color
 @Composable
 fun ProfileScreen(navController: NavController) {
     val context = LocalContext.current
-    val sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
 
-    // Retrieve stored user data
-    val firstName = sharedPreferences.getString("first_name", "") ?: ""
-    val lastName = sharedPreferences.getString("last_name", "") ?: ""
-    val email = sharedPreferences.getString("email", "") ?: ""
+    val sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+    val firstName = sharedPreferences.getString("first_name", "")
+    val lastName = sharedPreferences.getString("last_name","")
+    val email = sharedPreferences.getString("email", "")
+
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
+    modifier = Modifier
+        .fillMaxSize()
+        .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // **Logo Header**
-        Header(title = "String", onBackClick = { navController.popBackStack() })
+    ){
+        Header(title ="Home", onBackClick = {navController.popBackStack()})
 
-        // **Title**
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = "Personal information",
+            text="Personal Information",
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold
         )
+        Spacer(modifier = Modifier.height(24.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // **First Name Field**
         Text("First Name", fontSize = 14.sp, fontWeight = FontWeight.Medium)
-        OutlinedTextField(
-            value = firstName,
-            onValueChange = {},
-            modifier = Modifier.fillMaxWidth(),
-            readOnly = true
-        )
+        OutlinedTextField(value = firstName ?:"", onValueChange = {},
+            modifier = Modifier.fillMaxWidth(), readOnly = true)
+        Spacer(modifier = Modifier.height(24.dp))
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // **Last Name Field**
         Text("Last Name", fontSize = 14.sp, fontWeight = FontWeight.Medium)
-        OutlinedTextField(
-            value = lastName,
-            onValueChange = {},
-            modifier = Modifier.fillMaxWidth(),
-            readOnly = true
-        )
+        OutlinedTextField(value = lastName ?:"", onValueChange = {},
+            modifier = Modifier.fillMaxWidth(), readOnly = true)
+        Spacer(modifier = Modifier.height(24.dp))
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // **Email Field**
         Text("Email", fontSize = 14.sp, fontWeight = FontWeight.Medium)
-        OutlinedTextField(
-            value = email,
-            onValueChange = {},
-            modifier = Modifier.fillMaxWidth(),
-            readOnly = true
-        )
+        OutlinedTextField(value = email ?:"", onValueChange = {},
+            modifier = Modifier.fillMaxWidth(), readOnly = true)
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // **Logout Button**
         Button(
             onClick = {
+                // Clear stored user data from SharedPreferences when logging out
                 sharedPreferences.edit().clear().apply()
+
+                // Navigate back to the onboarding screen and clear back stack
                 navController.navigate("onboarding") {
                     popUpTo("onboarding") { inclusive = true }
                 }
             },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Yellow)
+            modifier = Modifier.fillMaxWidth(), // Makes button take full width
+            colors = ButtonDefaults.buttonColors(containerColor = Yellow) // Uses predefined Yellow color
         ) {
             Text("Log out", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.Black)
         }
     }
-}
 
-@Preview(showBackground = true)
+}
+@Preview
 @Composable
 fun ProfilePreview() {
     ProfileScreen(navController = rememberNavController())
 }
+
+
+
