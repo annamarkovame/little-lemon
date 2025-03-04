@@ -34,7 +34,7 @@ data class MenuItemNetwork(
 
 suspend fun fetchMenu(): List<MenuItemNetwork> {
     return try {
-        val responseString: String = httpClient.get("https://raw.githubusercontent.com/Meta-Mobile-Developer-PC/Working-With-Data-API/main/menu.json").body()
+        val responseString: String = httpClient.get("https://raw.githubusercontent.com/annamarkovame/little-lemon/refs/heads/main/app/src/main/res/menu.json").body()
         Log.d("RAW API Response", responseString) // ✅ Log raw JSON response
 
         val response: MenuNetwork = Json { ignoreUnknownKeys = true }.decodeFromString(responseString)
