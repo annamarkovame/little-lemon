@@ -1,47 +1,76 @@
 package com.example.littlelemon
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.lifecycleScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.littlelemon.ui.theme.LittleLemonTheme
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.createGraph
+import kotlinx.coroutines.launch
 
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
+class MainActivity : ComponentActivity(){
+    override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            LittleLemonTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+
+        val database = AppDatabase.getDatabase(this)
+        val menuDao = database.menuDao()
+
+        lifecycleScope.launch {
+            val menuItems = fetchMenu()
+
+            if (menuItems.isNotEmpty()) {
+                menuDao.clearMenu() // ✅ Clear old data
+                menuDao.insertMenuItems(menuItems.map {
+                    MenuItemEntity(it.id, it.title, it.description, it.price, it.image)
+                })
+
+                val storedItems = menuDao.getAllMenuItems() // ✅ Fetch from Room
+                Log.d("Database After Insert", storedItems.toString()) // ✅ Log stored items
             }
         }
+
+
+
+        setContent {
+            LittleLemonApp()
+        }
+
     }
+
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun LittleLemonApp(){
+    val navController = rememberNavController()
+    val context = LocalContext.current
+    val sharedPreferences = context.getSharedPreferences("LittleLemon", 0)
+    val isLoggedIn = sharedPreferences.getString("firstName", null) != null
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    LittleLemonTheme {
-        Greeting("Android")
+    Surface(modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+        ) {
+        NavHost(navController = navController, graph = navGraph(navController)  )
+
     }
 }
+
+@Preview
+@Composable
+fun LittleLemonPreview(){
+    LittleLemonApp()
+}
+
+
+
