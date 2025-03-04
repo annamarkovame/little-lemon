@@ -13,7 +13,7 @@
       "title": "Lemon Desert",
       "description": "Traditional homemade Italian Lemon Ricotta Cake.",
       "price": "10",
-      "image": "https://github.com/Meta-Mobile-Developer-PC/Working-With-Data-API/blob/main/images/lemonDessert%202.jpg?raw=true",
+      "image": "https://raw.githubusercontent.com/annamarkovame/little-lemon/refs/heads/main/app/src/main/res/drawable/lemon_dessert.png",
       "category": "desserts" 
     },
     {
